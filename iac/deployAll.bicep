@@ -8,6 +8,9 @@ param location string = 'centralus'
 param la_name string = 'la-youforgotparams-ccad21'
 param la_retentionInDays int = 30
 
+/*Application Insights Params */
+param ai_name string = 'ai-youforgotparams-ccad21'
+
 targetScope = 'subscription'
 
 /* create resource group */
@@ -27,3 +30,13 @@ module logAnalytics 'resources/logAnalytics.bicep' = {
   }
 }
 
+/* create application insights */
+module appInsights 'resources/appInsights.bicep' = {
+  scope: group
+  name: 'deployAppInsights'
+  params: {
+    ai_name: ai_name
+    location: location
+    logAnalyticsWorkspaceId: logAnalytics.outputs.logAnalyticsWorkspaceId
+  }
+}

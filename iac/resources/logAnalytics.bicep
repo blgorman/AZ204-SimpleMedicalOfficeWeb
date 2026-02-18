@@ -22,3 +22,5 @@ resource workspaces_la_name_resource 'Microsoft.OperationalInsights/workspaces@2
     publicNetworkAccessForQuery: 'Enabled'
   }
 }
+
+output logAnalyticsWorkspaceId string = workspaces_la_name_resource.id
