@@ -22,10 +22,11 @@ param sa_images_container_name string = 'images'
 param sa_documents_container_name string = 'documents'
 param staging_slot_name string = 'staging'
 param deployConnectionStrings bool = false
+param deployRoleAssignments bool = false
 
 var uniqueString = '20261231blg'
 
-var sa_name_normalized = toLower(sa_name) // ensure lowercase, 3-24 chars
+var sa_name_normalized = toLower('${take(sa_name, 24 - length(uniqueString))}${uniqueString}') // truncate base only, uniqueString always preserved
 
 targetScope = 'subscription'
 
@@ -94,5 +95,24 @@ module appService 'resources/appService.bicep' = {
     sa_documents_container_name: sa_documents_container_name
     staging_slot_name: staging_slot_name
     deployConnectionStrings: deployConnectionStrings
+  }
+}
+
+/* assign Storage Blob Data Contributor to the web app and staging slot identities */
+module storageRoleAssignmentWebApp 'resources/storageRoleAssignment.bicep' = if (deployRoleAssignments) {
+  scope: group
+  name: 'deployStorageRoleAssignment-webApp'
+  params: {
+    storageAccountName: storageAccount.outputs.storageAccountName
+    principalId: appService.outputs.webAppPrincipalId
+  }
+}
+
+module storageRoleAssignmentStagingSlot 'resources/storageRoleAssignment.bicep' = if (deployRoleAssignments) {
+  scope: group
+  name: 'deployStorageRoleAssignment-stagingSlot'
+  params: {
+    storageAccountName: storageAccount.outputs.storageAccountName
+    principalId: appService.outputs.stagingSlotPrincipalId
   }
 }

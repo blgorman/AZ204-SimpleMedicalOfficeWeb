@@ -113,3 +113,6 @@ resource stagingSlot 'Microsoft.Web/sites/slots@2025-03-01' = {
     httpsOnly: true
   }
 }
+
+output webAppPrincipalId string = webApp.identity.principalId
+output stagingSlotPrincipalId string = stagingSlot.identity.principalId
