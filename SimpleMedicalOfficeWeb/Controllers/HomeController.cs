@@ -6,8 +6,18 @@ namespace SimpleMedicalOfficeWeb.Controllers;
 
 public class HomeController : Controller
 {
+    private readonly IConfiguration _configuration;
+    public HomeController(IConfiguration configuration)
+    {
+        _configuration = configuration;
+    }
+
     public IActionResult Index()
     {
+        var storageAccountName = _configuration["StorageAccount:AccountName"];
+        var imagesContainerName = _configuration["StorageAccount:ImagesContainerName"];
+        ViewData["StorageAccountName"] = storageAccountName;
+        ViewData["ImagesContainerName"] = imagesContainerName;
         return View();
     }
 
