@@ -16,8 +16,10 @@ public class HomeController : Controller
     {
         var storageAccountName = _configuration["StorageAccount:AccountName"];
         var imagesContainerName = _configuration["StorageAccount:ImagesContainerName"];
+        var documentsContainerName = _configuration["StorageAccount:DocumentsContainerName"];
         ViewData["StorageAccountName"] = storageAccountName;
         ViewData["ImagesContainerName"] = imagesContainerName;
+        ViewData["DocumentsContainerName"] = documentsContainerName;
         return View();
     }
 
