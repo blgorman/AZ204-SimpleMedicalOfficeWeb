@@ -22,7 +22,8 @@ jobs:
   deploy-architecture:
     name: Deploy Architecture
     runs-on: ubuntu-latest
-
+    environment:
+      name: 'dev'
 
     steps:
       - name: Checkout Code
