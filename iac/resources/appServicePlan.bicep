@@ -8,6 +8,9 @@ resource hostingPlan 'Microsoft.Web/serverfarms@2025-03-01' = {
   sku: {
     name: asp_skuName
   }
+  properties: {
+    reserved: true
+  }
 }
 
 output hostingPlanId string = hostingPlan.id

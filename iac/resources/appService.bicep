@@ -60,13 +60,13 @@ resource webApp 'Microsoft.Web/sites@2025-03-01' = {
   properties: {
     serverFarmId: hostingPlanId
     siteConfig: deployConnectionStrings ? {
-      netFrameworkVersion: 'v10.0'
+      linuxFxVersion: 'DOTNETCORE|10.0'
       appSettings: commonAppSettings
       connectionStrings: commonConnectionStrings
       ftpsState: 'FtpsOnly'
       minTlsVersion: '1.2'
     } : {
-      netFrameworkVersion: 'v10.0'
+      linuxFxVersion: 'DOTNETCORE|10.0'
       appSettings: commonAppSettings
       ftpsState: 'FtpsOnly'
       minTlsVersion: '1.2'
@@ -85,13 +85,13 @@ resource stagingSlot 'Microsoft.Web/sites/slots@2025-03-01' = {
   properties: {
     serverFarmId: hostingPlanId
     siteConfig: deployConnectionStrings ? {
-      netFrameworkVersion: 'v10.0'
+      linuxFxVersion: 'DOTNETCORE|10.0'
       appSettings: commonAppSettings
       connectionStrings: commonConnectionStrings
       ftpsState: 'FtpsOnly'
       minTlsVersion: '1.2'
     } : {
-      netFrameworkVersion: 'v10.0'
+      linuxFxVersion: 'DOTNETCORE|10.0'
       appSettings: commonAppSettings
       ftpsState: 'FtpsOnly'
       minTlsVersion: '1.2'
