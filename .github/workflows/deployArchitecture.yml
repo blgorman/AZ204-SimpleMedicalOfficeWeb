@@ -2,7 +2,7 @@ name: "Bicep Deploy Resources"
 
 on:
   push:
-    branches: [ mainnowayjose ]
+    branches: [ main ]
     paths:
       - 'iac/**'
   workflow_dispatch:
