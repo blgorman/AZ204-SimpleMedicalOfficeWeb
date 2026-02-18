@@ -5,6 +5,7 @@ param applicationInsightsName string
 param sa_name string
 param sa_images_container_name string
 param staging_slot_name string
+param deployConnectionStrings bool
 
 resource applicationInsights 'Microsoft.Insights/components@2020-02-02' existing = {
   name: applicationInsightsName
@@ -50,7 +51,7 @@ var commonConnectionStrings = [
   }
 ]
 
-resource webApp 'Microsoft.Web/sites@2022-03-01' = {
+resource webApp 'Microsoft.Web/sites@2025-03-01' = {
   name: web_name
   location: location
   identity: {
@@ -58,10 +59,15 @@ resource webApp 'Microsoft.Web/sites@2022-03-01' = {
   }
   properties: {
     serverFarmId: hostingPlanId
-    siteConfig: {
+    siteConfig: deployConnectionStrings ? {
       netFrameworkVersion: 'v10.0'
       appSettings: commonAppSettings
       connectionStrings: commonConnectionStrings
+      ftpsState: 'FtpsOnly'
+      minTlsVersion: '1.2'
+    } : {
+      netFrameworkVersion: 'v10.0'
+      appSettings: commonAppSettings
       ftpsState: 'FtpsOnly'
       minTlsVersion: '1.2'
     }
@@ -69,7 +75,7 @@ resource webApp 'Microsoft.Web/sites@2022-03-01' = {
   }
 }
 
-resource stagingSlot 'Microsoft.Web/sites/slots@2022-03-01' = {
+resource stagingSlot 'Microsoft.Web/sites/slots@2025-03-01' = {
   parent: webApp
   name: staging_slot_name
   location: location
@@ -78,10 +84,15 @@ resource stagingSlot 'Microsoft.Web/sites/slots@2022-03-01' = {
   }
   properties: {
     serverFarmId: hostingPlanId
-    siteConfig: {
+    siteConfig: deployConnectionStrings ? {
       netFrameworkVersion: 'v10.0'
       appSettings: commonAppSettings
       connectionStrings: commonConnectionStrings
+      ftpsState: 'FtpsOnly'
+      minTlsVersion: '1.2'
+    } : {
+      netFrameworkVersion: 'v10.0'
+      appSettings: commonAppSettings
       ftpsState: 'FtpsOnly'
       minTlsVersion: '1.2'
     }

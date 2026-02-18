@@ -19,3 +19,4 @@ param web_name = 'app-az204-simplemedicalofficeweb-ccad21'
 param sa_name = 'saaz204smplmdclccad21'
 param sa_images_container_name = 'images'
 param staging_slot_name = 'staging'
+param deployConnectionStrings = true
