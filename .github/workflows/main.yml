@@ -1,0 +1,56 @@
+name: Deploy ASP.NET Core app to Azure Web App
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'SimpleMedicalOfficeWeb/**'
+  workflow_dispatch:
+
+permissions:
+      id-token: write
+      contents: read
+
+env:
+  DOTNET_VERSION: '10.x'
+  APP_NAME: ${{secrets.APP_NAME}}
+  SLOT_NAME: ${{secrets.SLOT_NAME}}
+
+jobs:
+  build-and-deploy-dev:
+    runs-on: ubuntu-latest
+    environment:
+      name: 'dev'
+    defaults:
+      run:
+        working-directory: SimpleMedicalOfficeWeb/
+        
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Set up .NET Core
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Build with dotnet
+        run: dotnet build --configuration Release
+
+      - name: dotnet publish
+        run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/myapp
+
+      - name: Login to Azure
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+  
+      - name: Deploy to Azure Web App
+        id: deploy-to-webapp
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: ${{ env.APP_NAME }}
+          slot-name: ${{ env.SLOT_NAME }}
+          package: ${{ env.DOTNET_ROOT }}/myapp
