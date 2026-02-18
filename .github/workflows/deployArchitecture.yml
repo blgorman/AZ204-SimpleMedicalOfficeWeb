@@ -11,7 +11,7 @@ env:
   CURRENT_BRANCH: ${{ github.head_ref || github.ref_name }} 
   TEMPLATE: 'iac/deployAll.bicep'
   PARAMETERS: 'iac/deployAll.bicepparam'  
-  DEPLOYMENT_NAME: 'ACW_ProtectingYourApplicationSecrets'
+  DEPLOYMENT_NAME: 'MSSA-CCAD21-Architecture-SimpleMedicalOfficeWeb'
   REGION: 'centralus'
   
 permissions:
