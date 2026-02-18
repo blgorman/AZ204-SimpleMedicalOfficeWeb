@@ -29,11 +29,11 @@ var commonAppSettings = [
     value: 'recommended'
   }
   {
-    name: 'StorageAccount:AccountName'
+    name: 'StorageAccount__AccountName'
     value: sa_name
   }
   {
-    name: 'StorageAccount:ImagesContainerName'
+    name: 'StorageAccount__ImagesContainerName'
     value: sa_images_container_name
   }
 ]
