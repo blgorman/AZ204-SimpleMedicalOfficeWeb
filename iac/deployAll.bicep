@@ -19,8 +19,13 @@ param asp_skuName string = 'F1'
 param web_name string = 'web-youforgotparams-ccad21'
 param sa_name string = 'sayouforgotparms235223'
 param sa_images_container_name string = 'images'
+param sa_documents_container_name string = 'documents'
 param staging_slot_name string = 'staging'
 param deployConnectionStrings bool = false
+
+var uniqueString = '20261231blg'
+
+var sa_name_normalized = toLower(sa_name) // ensure lowercase, 3-24 chars
 
 targetScope = 'subscription'
 
@@ -52,6 +57,18 @@ module appInsights 'resources/appInsights.bicep' = {
   }
 }
 
+/* create storage account with images and documents containers */
+module storageAccount 'resources/storageAccount.bicep' = {
+  scope: group
+  name: 'deployStorageAccount'
+  params: {
+    sa_name: sa_name_normalized
+    location: location
+    containerNames: [sa_images_container_name, sa_documents_container_name]
+  }
+}
+
+
 /* create app service plan */
 module appServicePlan 'resources/appServicePlan.bicep' = {
   scope: group
@@ -72,8 +89,9 @@ module appService 'resources/appService.bicep' = {
     location: location
     hostingPlanId: appServicePlan.outputs.hostingPlanId
     applicationInsightsName: appInsights.outputs.applicationInsightsName
-    sa_name: sa_name
+    sa_name: sa_name_normalized
     sa_images_container_name: sa_images_container_name
+    sa_documents_container_name: sa_documents_container_name
     staging_slot_name: staging_slot_name
     deployConnectionStrings: deployConnectionStrings
   }
