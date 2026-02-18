@@ -15,6 +15,11 @@ param ai_name string = 'ai-youforgotparams-ccad21'
 param asp_name string = 'asp-youforgotparams-ccad21'
 param asp_skuName string = 'F1'
 
+/*App Service Params */
+param web_name string = 'web-youforgotparams-ccad21'
+param sa_name string = 'sayouforgotparms235223'
+param sa_images_container_name string = 'images'
+
 targetScope = 'subscription'
 
 /* create resource group */
@@ -53,5 +58,19 @@ module appServicePlan 'resources/appServicePlan.bicep' = {
     asp_name: asp_name
     location: location
     asp_skuName: asp_skuName
+  }
+}
+
+/* create app service */
+module appService 'resources/appService.bicep' = {
+  scope: group
+  name: 'deployAppService'
+  params: {
+    web_name: web_name
+    location: location
+    hostingPlanId: appServicePlan.outputs.hostingPlanId
+    applicationInsightsName: appInsights.outputs.applicationInsightsName
+    sa_name: sa_name
+    sa_images_container_name: sa_images_container_name
   }
 }
