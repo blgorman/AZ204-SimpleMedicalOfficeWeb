@@ -11,6 +11,10 @@ param la_retentionInDays int = 30
 /*Application Insights Params */
 param ai_name string = 'ai-youforgotparams-ccad21'
 
+/*App Service Plan Params */
+param asp_name string = 'asp-youforgotparams-ccad21'
+param asp_skuName string = 'F1'
+
 targetScope = 'subscription'
 
 /* create resource group */
@@ -38,5 +42,16 @@ module appInsights 'resources/appInsights.bicep' = {
     ai_name: ai_name
     location: location
     logAnalyticsWorkspaceId: logAnalytics.outputs.logAnalyticsWorkspaceId
+  }
+}
+
+/* create app service plan */
+module appServicePlan 'resources/appServicePlan.bicep' = {
+  scope: group
+  name: 'deployAppServicePlan'
+  params: {
+    asp_name: asp_name
+    location: location
+    asp_skuName: asp_skuName
   }
 }
