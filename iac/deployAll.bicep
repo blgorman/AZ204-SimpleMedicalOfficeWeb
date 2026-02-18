@@ -19,6 +19,8 @@ param asp_skuName string = 'F1'
 param web_name string = 'web-youforgotparams-ccad21'
 param sa_name string = 'sayouforgotparms235223'
 param sa_images_container_name string = 'images'
+param staging_slot_name string = 'staging'
+param deployConnectionStrings bool = false
 
 targetScope = 'subscription'
 
@@ -72,5 +74,7 @@ module appService 'resources/appService.bicep' = {
     applicationInsightsName: appInsights.outputs.applicationInsightsName
     sa_name: sa_name
     sa_images_container_name: sa_images_container_name
+    staging_slot_name: staging_slot_name
+    deployConnectionStrings: deployConnectionStrings
   }
 }
