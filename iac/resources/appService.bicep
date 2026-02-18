@@ -15,26 +15,32 @@ var commonAppSettings = [
   {
     name: 'APPLICATIONINSIGHTS_CONNECTION_STRING'
     value: applicationInsights.properties.ConnectionString
+    deploymentSlotSetting: true
   }
   {
     name: 'APPINSIGHTS_INSTRUMENTATIONKEY'
     value: applicationInsights.properties.InstrumentationKey
+    deploymentSlotSetting: true
   }
   {
     name: 'ApplicationInsightsAgent_EXTENSION_VERSION'
     value: '~3'
+    deploymentSlotSetting: true
   }
   {
     name: 'XDT_MicrosoftApplicationInsights_Mode'
     value: 'recommended'
+    deploymentSlotSetting: true
   }
   {
     name: 'StorageAccount__AccountName'
     value: sa_name
+    deploymentSlotSetting: true
   }
   {
     name: 'StorageAccount__ImagesContainerName'
     value: sa_images_container_name
+    deploymentSlotSetting: true
   }
 ]
 
@@ -43,11 +49,13 @@ var commonConnectionStrings = [
     name: 'DefaultConnection'
     type: 'SQLAzure'
     connectionString: 'your-db-connection-string-here'
+    deploymentSlotSetting: true
   }
   {
     name: 'AzureAppConfigConnection'
     type: 'Custom'
     connectionString: 'your-app-config-connection-string-here'
+    deploymentSlotSetting: true
   }
 ]
 
