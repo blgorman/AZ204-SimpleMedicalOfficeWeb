@@ -23,4 +23,4 @@ param asp_skuName = 'P0v3'
 param web_name = 'app-az204-simplemedicalofficeweb-ccad21'
 param staging_slot_name = 'staging'
 param deployConnectionStrings = true
-param deployRoleAssignments = true
+param deployRoleAssignments = false
