@@ -5,6 +5,7 @@ param applicationInsightsName string
 param sa_name string
 param sa_images_container_name string
 param sa_documents_container_name string
+param sa_endpoint string
 param staging_slot_name string
 param deployConnectionStrings bool
 
@@ -46,6 +47,11 @@ var commonAppSettings = [
   {
     name: 'StorageAccount__DocumentsContainerName'
     value: sa_documents_container_name
+    deploymentSlotSetting: true
+  }
+  {
+    name: 'StorageAccount__Endpoint'
+    value: sa_endpoint
     deploymentSlotSetting: true
   }
 ]

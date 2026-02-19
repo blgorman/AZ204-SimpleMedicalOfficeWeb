@@ -13,3 +13,22 @@
     <p>Images Container Name: @ViewData["ImagesContainerName"]</p>
     <p>Documents Container Name: @ViewData["DocumentsContainerName"]</p>
 </div>
+
+<div>
+    <h2>Images</h2>
+    @if (ViewData["ImageDataUris"] is List<string> imageDataUris && imageDataUris.Count > 0)
+    {
+        <div class="row">
+            @foreach (var dataUri in imageDataUris)
+            {
+                <div class="col-md-4 mb-3">
+                    <img src="@dataUri" alt="Image" class="img-fluid img-thumbnail" />
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <p>No images found.</p>
+    }
+</div>

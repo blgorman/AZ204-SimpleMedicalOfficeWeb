@@ -93,6 +93,7 @@ module appService 'resources/appService.bicep' = {
     sa_name: sa_name_normalized
     sa_images_container_name: sa_images_container_name
     sa_documents_container_name: sa_documents_container_name
+    sa_endpoint: storageAccount.outputs.storageAccountEndpoint
     staging_slot_name: staging_slot_name
     deployConnectionStrings: deployConnectionStrings
   }
