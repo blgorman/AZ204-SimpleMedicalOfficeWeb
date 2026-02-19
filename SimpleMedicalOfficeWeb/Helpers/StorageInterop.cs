@@ -70,6 +70,11 @@ public class StorageInterop
             var properties = blobClient.GetProperties();
             var contentType = properties.Value.ContentType ?? "application/octet-stream";
 
+            if (!contentType.StartsWith("image/", StringComparison.OrdinalIgnoreCase))
+            {
+                continue;
+            }
+
             using var ms = new MemoryStream();
             blobClient.DownloadTo(ms);
             var base64 = Convert.ToBase64String(ms.ToArray());
