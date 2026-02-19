@@ -22,13 +22,7 @@ public class StorageInterop
 
     public BlobServiceClient GetBlobServiceClient()
     {
-        // Create a DefaultAzureCredentialOptions object to configure the DefaultAzureCredential
-        DefaultAzureCredentialOptions options = new()
-        {
-            ExcludeEnvironmentCredential = true,
-            ExcludeManagedIdentityCredential = true
-        };
-        DefaultAzureCredential credential = new DefaultAzureCredential(options);
+        DefaultAzureCredential credential = new DefaultAzureCredential();
         var endpointURI = new Uri(_input.StorageEndpoint);
         return new BlobServiceClient(endpointURI, credential);
     }
