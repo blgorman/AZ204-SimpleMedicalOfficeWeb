@@ -32,3 +32,4 @@ resource containers 'Microsoft.Storage/storageAccounts/blobServices/containers@2
 }]
 
 output storageAccountName string = storageAccount.name
+output storageAccountEndpoint string = storageAccount.properties.primaryEndpoints.blob
