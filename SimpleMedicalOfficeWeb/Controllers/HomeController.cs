@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using SimpleMedicalOfficeWeb.Helpers;
 using SimpleMedicalOfficeWeb.Models;
 using SimpleMedicalOfficeWeb.Helpers;
 

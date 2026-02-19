@@ -6,6 +6,7 @@ param sa_name string
 param sa_endpoint string
 param sa_images_container_name string
 param sa_documents_container_name string
+param sa_endpoint string
 param staging_slot_name string
 param deployConnectionStrings bool
 
