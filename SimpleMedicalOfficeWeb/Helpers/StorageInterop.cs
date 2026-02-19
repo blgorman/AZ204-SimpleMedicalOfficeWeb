@@ -60,6 +60,19 @@ public class StorageInterop
         }
     }
 
+    public Dictionary<string, string> GetAllBlobNamesAndUris(string containerName)
+    {
+        var blobServiceClient = GetBlobServiceClient();
+        var containerClient = blobServiceClient.GetBlobContainerClient(containerName);
+        var blobMap = new Dictionary<string, string>();
+        foreach (var blobItem in containerClient.GetBlobs())
+        {
+            var blobClient = containerClient.GetBlobClient(blobItem.Name);
+            blobMap[blobItem.Name] = blobClient.Uri.ToString();
+        }
+        return blobMap;
+    }
+
     public List<string> GetAllBlobsAsBase64DataUris(string containerName)
     {
         var containerClient = GetBlobContainerClient(containerName);

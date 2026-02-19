@@ -8,7 +8,7 @@ public class StorageInteropInput
     public string DocumentsContainerName { get; set; } = string.Empty;
 
     public StorageInteropInput()
-    { 
+    {
         
     }
 

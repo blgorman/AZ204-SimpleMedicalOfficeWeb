@@ -1,0 +1,27 @@
+@{
+    ViewData["Title"] = "New Patients";
+}
+
+<div class="text-center">
+    <h1 class="display-4">New Patients</h1>
+    <p>Download documents for new patients below.</p>
+</div>
+
+<div>
+    <h2>Documents</h2>
+    @if (ViewData["BlobNames"] is List<string> blobNames && blobNames.Count > 0)
+    {
+        <ul class="list-group">
+            @foreach (var name in blobNames)
+            {
+                <li class="list-group-item">
+                    <a asp-controller="Home" asp-action="DownloadDocument" asp-route-blobName="@name">@name</a>
+                </li>
+            }
+        </ul>
+    }
+    else
+    {
+        <p>No documents found.</p>
+    }
+</div>
