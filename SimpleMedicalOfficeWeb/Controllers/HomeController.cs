@@ -33,6 +33,43 @@ public class HomeController : Controller
         return View();
     }
 
+    public IActionResult NewPatients()
+    {
+        var storageAccountName = _configuration["StorageAccount:AccountName"];
+        var storageEndpoint = _configuration["StorageAccount:Endpoint"];
+        var imagesContainerName = _configuration["StorageAccount:ImagesContainerName"];
+        var documentsContainerName = _configuration["StorageAccount:DocumentsContainerName"];
+
+        var storageInteropInput = new StorageInteropInput(storageEndpoint, storageAccountName
+                                                            , imagesContainerName, documentsContainerName);
+        var storageInterop = new StorageInterop(storageInteropInput);
+
+        var blobNamesAndUris = storageInterop.GetAllBlobNamesAndUris(documentsContainerName);
+        ViewData["BlobNames"] = blobNamesAndUris.Keys.ToList();
+
+        return View();
+    }
+
+    public IActionResult DownloadDocument(string blobName)
+    {
+        if (string.IsNullOrWhiteSpace(blobName))
+        {
+            return BadRequest();
+        }
+
+        var storageAccountName = _configuration["StorageAccount:AccountName"];
+        var storageEndpoint = _configuration["StorageAccount:Endpoint"];
+        var imagesContainerName = _configuration["StorageAccount:ImagesContainerName"];
+        var documentsContainerName = _configuration["StorageAccount:DocumentsContainerName"];
+
+        var storageInteropInput = new StorageInteropInput(storageEndpoint, storageAccountName
+                                                            , imagesContainerName, documentsContainerName);
+        var storageInterop = new StorageInterop(storageInteropInput);
+
+        var bytes = storageInterop.GetBlob(documentsContainerName, blobName);
+        return File(bytes, "application/octet-stream", blobName);
+    }
+
     public IActionResult Privacy()
     {
         return View();
