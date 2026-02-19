@@ -12,4 +12,26 @@
     <p>Storage Account Name: @ViewData["StorageAccountName"]</p>
     <p>Images Container Name: @ViewData["ImagesContainerName"]</p>
     <p>Documents Container Name: @ViewData["DocumentsContainerName"]</p>
+    <p>Storage Account Endpoint: @ViewData["StorageAccountEndpoint"]</p>
 </div>
+
+<div>
+    <h2>Images</h2>
+
+    @if(ViewData["ImageDataUris"] is List<string> imageDataUris && imageDataUris.Count > 0)
+    {
+        <div class="row">
+            @foreach(var dataUri in imageDataUris)
+            {
+                <div class="col-md-4 mb3">
+                    <img src="@dataUri" alt="image from storage" class="img-fluid img-thumbnail" />
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <p>No images found in the storage account.</p>
+    }
+</div>
+

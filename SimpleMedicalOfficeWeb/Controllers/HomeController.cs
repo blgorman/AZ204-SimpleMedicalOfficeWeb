@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using SimpleMedicalOfficeWeb.Models;
+using SimpleMedicalOfficeWeb.Helpers;
 
 namespace SimpleMedicalOfficeWeb.Controllers;
 
@@ -14,12 +15,20 @@ public class HomeController : Controller
 
     public IActionResult Index()
     {
-        var storageAccountName = _configuration["StorageAccount:AccountName"];
-        var imagesContainerName = _configuration["StorageAccount:ImagesContainerName"];
-        var documentsContainerName = _configuration["StorageAccount:DocumentsContainerName"];
+        var storageAccountName = _configuration["StorageAccount:AccountName"] ?? string.Empty;
+        var imagesContainerName = _configuration["StorageAccount:ImagesContainerName"] ?? string.Empty;
+        var documentsContainerName = _configuration["StorageAccount:DocumentsContainerName"] ?? string.Empty;
+        var storageAccountEndpoint = _configuration["StorageAccount:Endpoint"] ?? string.Empty;
         ViewData["StorageAccountName"] = storageAccountName;
         ViewData["ImagesContainerName"] = imagesContainerName;
         ViewData["DocumentsContainerName"] = documentsContainerName;
+        ViewData["StorageAccountEndpoint"] = storageAccountEndpoint;
+
+        var storageInteropInput = new StorageInteropInput(storageAccountEndpoint, storageAccountName
+                                                            , imagesContainerName, documentsContainerName);
+        var storageInterop = new StorageInterop(storageInteropInput);
+        var imageDataUris = storageInterop.GetAllBlobsAsBase64DataUris(imagesContainerName);
+        ViewData["ImageDataUris"] = imageDataUris;
         return View();
     }
 
