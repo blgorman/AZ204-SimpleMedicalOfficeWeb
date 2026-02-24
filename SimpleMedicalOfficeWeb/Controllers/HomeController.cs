@@ -1,16 +1,21 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using SimpleMedicalOfficeWeb.Models;
 using SimpleMedicalOfficeWeb.Helpers;
+using SimpleMedicalOfficeWeb.Data;
 
 namespace SimpleMedicalOfficeWeb.Controllers;
 
 public class HomeController : Controller
 {
     private readonly IConfiguration _configuration;
-    public HomeController(IConfiguration configuration)
+    private readonly ApplicationDbContext _context;
+    
+    public HomeController(IConfiguration configuration, ApplicationDbContext context)
     {
         _configuration = configuration;
+        _context = context;
     }
 
     public IActionResult Index()
@@ -82,5 +87,11 @@ public class HomeController : Controller
     public IActionResult Error()
     {
         return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+    }
+
+    public async Task<IActionResult> MigrateDatabase()
+    {
+        await _context.Database.MigrateAsync();
+        return RedirectToAction(nameof(Index));
     }
 }
