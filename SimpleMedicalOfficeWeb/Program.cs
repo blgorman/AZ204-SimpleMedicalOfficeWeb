@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Web;
@@ -28,7 +29,12 @@ public class Program
 
         //add microsoft authorization
         builder.Services.AddAuthentication()
-            .AddMicrosoftIdentityWebApp(builder.Configuration.GetSection("AzureAd"));
+            .AddMicrosoftIdentityWebApp(builder.Configuration.GetSection("AzureAd"),
+                cookieScheme: null);
+
+        builder.Services.Configure<OpenIdConnectOptions>(
+            OpenIdConnectDefaults.AuthenticationScheme,
+            options => options.SignInScheme = IdentityConstants.ExternalScheme);
 
         var app = builder.Build();
 
