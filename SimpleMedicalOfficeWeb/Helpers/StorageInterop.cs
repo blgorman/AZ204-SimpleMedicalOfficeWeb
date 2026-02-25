@@ -20,14 +20,14 @@ public class StorageInterop
         _input = input;
     }
 
-    public BlobServiceClient GetBlobServiceClient()
+    private BlobServiceClient GetBlobServiceClient()
     {
         DefaultAzureCredential credential = new DefaultAzureCredential();
         var endpointURI = new Uri(_input.StorageEndpoint);
         return new BlobServiceClient(endpointURI, credential);
     }
 
-    public BlobContainerClient GetBlobContainerClient(string containerName)
+    private BlobContainerClient GetBlobContainerClient(string containerName)
     {
         var _blobServiceClient = GetBlobServiceClient();
         var containerClient = _blobServiceClient.GetBlobContainerClient(containerName);
@@ -38,7 +38,7 @@ public class StorageInterop
         return containerClient;
     }
 
-    public BlobClient GetBlobClient(string containerName, string blobName)
+    private BlobClient GetBlobClient(string containerName, string blobName)
     {
         var containerClient = GetBlobContainerClient(containerName);
         var target = containerClient.GetBlobClient(blobName);
@@ -51,12 +51,20 @@ public class StorageInterop
 
     public byte[] GetBlob(string containerName, string blobName)
     {
-        var blobClient = GetBlobClient(containerName, blobName);
-
-        using (var ms = new MemoryStream())
+        try
         {
-            blobClient.DownloadTo(ms);
-            return ms.ToArray();
+            var blobClient = GetBlobClient(containerName, blobName);
+
+            using (var ms = new MemoryStream())
+            {
+                blobClient.DownloadTo(ms);
+                return ms.ToArray();
+            }
+        }
+        catch (Exception ex)
+        {
+            //todo: Stop swallowing exceptions, log them instead
+            throw new FileNotFoundException("Could not get blob");
         }
     }
 
@@ -86,30 +94,44 @@ public class StorageInterop
         }
         catch (Exception ex)
         {
-            return new List<string>();  
+            //todo: Stop swallowing exceptions, log them instead
+             
         }
+        return new List<string>();
     }
 
     public void UploadBlob(string containerName, string blobName, Stream content)
     {
-        var target = GetBlobClient(containerName, blobName);
-        target.Upload(content);
-    }
+        try
+        {
+            var target = GetBlobClient(containerName, blobName);
+            target.Upload(content);
+        }
+        catch (Exception ex)
+        {
+            //TODO: log exception
+            throw new Exception("Can't upload blob at this time");
+        }
 
-    //public List<string> GetAllBlobUris(string containerName)
-    //{
-    //    throw new NotImplementedException();
-    //}
+    }
 
     public Dictionary<string, string> GetAllBlobNamesAndUris(string containerName)
     {
-        var blobServiceClient = GetBlobServiceClient();
-        var containerClient = blobServiceClient.GetBlobContainerClient(containerName);
         var blobMap = new Dictionary<string, string>();
-        foreach (var blobItem in containerClient.GetBlobs())
+        try
         {
-            var blobClient = containerClient.GetBlobClient(blobItem.Name);
-            blobMap[blobItem.Name] = blobClient.Uri.ToString();
+            var blobServiceClient = GetBlobServiceClient();
+            var containerClient = blobServiceClient.GetBlobContainerClient(containerName);
+            
+            foreach (var blobItem in containerClient.GetBlobs())
+            {
+                var blobClient = containerClient.GetBlobClient(blobItem.Name);
+                blobMap[blobItem.Name] = blobClient.Uri.ToString();
+            }
+        }
+        catch (System.Exception ex)
+        {
+            //TODO: log exception
         }
         return blobMap;
     }
