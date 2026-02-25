@@ -62,25 +62,32 @@ public class StorageInterop
 
     public List<string> GetAllBlobsAsBase64DataUris(string containerName)
     {
-        var containerClient = GetBlobContainerClient(containerName);
-        var dataUris = new List<string>();
-        foreach (var blobItem in containerClient.GetBlobs())
+        try
         {
-            var blobClient = containerClient.GetBlobClient(blobItem.Name);
-            var properties = blobClient.GetProperties();
-            var contentType = properties.Value.ContentType ?? "application/octet-stream";
-
-            if (!contentType.StartsWith("image/", StringComparison.OrdinalIgnoreCase))
+            var containerClient = GetBlobContainerClient(containerName);
+            var dataUris = new List<string>();
+            foreach (var blobItem in containerClient.GetBlobs())
             {
-                continue;
-            }
+                var blobClient = containerClient.GetBlobClient(blobItem.Name);
+                var properties = blobClient.GetProperties();
+                var contentType = properties.Value.ContentType ?? "application/octet-stream";
 
-            using var ms = new MemoryStream();
-            blobClient.DownloadTo(ms);
-            var base64 = Convert.ToBase64String(ms.ToArray());
-            dataUris.Add($"data:{contentType};base64,{base64}");
+                if (!contentType.StartsWith("image/", StringComparison.OrdinalIgnoreCase))
+                {
+                    continue;
+                }
+
+                using var ms = new MemoryStream();
+                blobClient.DownloadTo(ms);
+                var base64 = Convert.ToBase64String(ms.ToArray());
+                dataUris.Add($"data:{contentType};base64,{base64}");
+            }
+            return dataUris;
         }
-        return dataUris;
+        catch (Exception ex)
+        {
+            return new List<string>();  
+        }
     }
 
     public void UploadBlob(string containerName, string blobName, Stream content)

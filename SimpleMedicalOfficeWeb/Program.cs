@@ -10,6 +10,9 @@ public class Program
     {
         var builder = WebApplication.CreateBuilder(args);
 
+        var microsoftClientID = builder.Configuration["Authentication:Microsoft:ClientId"] ?? throw new InvalidOperationException("Client ID must be set in configuration");
+        var microsoftClientSecret = builder.Configuration["Authentication:Microsoft:ClientSecret"] ?? throw new InvalidOperationException("Client Secret must be set in configuration");    
+
         // Add services to the container.
         var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
         builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -22,6 +25,13 @@ public class Program
         builder.Services.AddControllersWithViews();
 
         builder.Services.AddScoped<IUserRolesService, UserRolesService>();
+
+        //add microsoft authorization
+        builder.Services.AddAuthentication().AddMicrosoftAccount(microsoftOptions =>
+        {
+            microsoftOptions.ClientId = microsoftClientID;
+            microsoftOptions.ClientSecret = microsoftClientSecret;
+        });
 
         var app = builder.Build();
 
