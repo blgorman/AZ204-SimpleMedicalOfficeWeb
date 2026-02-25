@@ -4,18 +4,22 @@ using Microsoft.EntityFrameworkCore;
 using SimpleMedicalOfficeWeb.Models;
 using SimpleMedicalOfficeWeb.Helpers;
 using SimpleMedicalOfficeWeb.Data;
+using Microsoft.AspNetCore.Authorization;
 
 namespace SimpleMedicalOfficeWeb.Controllers;
-
 public class HomeController : Controller
 {
     private readonly IConfiguration _configuration;
     private readonly ApplicationDbContext _context;
+    private readonly IUserRolesService _userRolesService;
     
-    public HomeController(IConfiguration configuration, ApplicationDbContext context)
+    public HomeController(IConfiguration configuration
+                            , ApplicationDbContext context
+                            , IUserRolesService userRolesService)
     {
         _configuration = configuration;
         _context = context;
+        _userRolesService = userRolesService;
     }
 
     public IActionResult Index()
@@ -89,9 +93,18 @@ public class HomeController : Controller
         return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
     }
 
+    [Authorize]
     public async Task<IActionResult> MigrateDatabase()
     {
         await _context.Database.MigrateAsync();
+        return RedirectToAction(nameof(Index));
+    }
+
+    //make sure we have the admin user and role created
+    //so we can test role-based auth in the app
+    public async Task<IActionResult> EnsureAdminUserRole()
+    {
+        await _userRolesService.EnsureAdminUserRole();
         return RedirectToAction(nameof(Index));
     }
 }

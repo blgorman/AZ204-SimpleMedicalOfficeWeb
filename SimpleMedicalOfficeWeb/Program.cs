@@ -20,6 +20,8 @@ public class Program
             .AddEntityFrameworkStores<ApplicationDbContext>();
         builder.Services.AddControllersWithViews();
 
+        builder.Services.AddScoped<IUserRolesService, UserRolesService>();
+
         var app = builder.Build();
 
         // Configure the HTTP request pipeline.
