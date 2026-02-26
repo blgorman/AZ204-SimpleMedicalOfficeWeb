@@ -24,7 +24,6 @@ public class Program
                 builder.Configuration.AddAzureAppConfiguration(options =>
                 {
                     options.Connect(appConfigConnectionString)
-                        .Select(KeyFilter.Any, LabelFilter.Null)
                         .ConfigureKeyVault(kv =>
                         {
                             kv.SetCredential(new DefaultAzureCredential());
