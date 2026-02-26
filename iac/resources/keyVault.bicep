@@ -36,6 +36,9 @@ param sqlAdminPassword string
 @description('Deploy the Authentication secrets to Key Vault set to false after first deploy to avoid overwriting existing secrets')
 param deployAuthenticationSecrets bool
 
+@description('Deploy Key Vault role assignments set to false after first deploy if role assignments already exist')
+param deployKeyVaultRoleAssignments bool = true
+
 var skuName = 'standard'
 var softDeleteRetentionInDays = 7
 var keyVaultAdminRoleId = '00482a5a-887f-4fb3-b363-3b7fe8e74483' // Key Vault Administrator role ID
@@ -81,7 +84,7 @@ resource keyVault 'Microsoft.KeyVault/vaults@2022-07-01' = {
 
 // Assign Key Vault Administrator role to the specified admin object ID
 
-resource keyVaultAdminRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+resource keyVaultAdminRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = if (deployKeyVaultRoleAssignments) {
   name: guid(keyVault.id, keyVaultAdminObjectId, keyVaultAdminRoleId)
   scope: keyVault
   properties: {
@@ -92,7 +95,7 @@ resource keyVaultAdminRoleAssignment 'Microsoft.Authorization/roleAssignments@20
 }
 
 // Assign Key Vault Secrets User role to App Configuration managed identity
-resource appConfigSecretsUserRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+resource appConfigSecretsUserRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = if (deployKeyVaultRoleAssignments) {
   name: guid(keyVault.id, appConfigPrincipalId, keyVaultSecretsUserRoleId)
   scope: keyVault
   properties: {
