@@ -1,3 +1,4 @@
+using Azure.Identity;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -21,7 +22,11 @@ public class Program
             builder.Configuration.AddAzureAppConfiguration(options =>
             {
                 options.Connect(appConfigConnectionString)
-                    .Select(KeyFilter.Any, LabelFilter.Null);
+                    .Select(KeyFilter.Any, LabelFilter.Null)
+                    .ConfigureKeyVault(kv =>
+                    {
+                        kv.SetCredential(new DefaultAzureCredential());
+                    });
             });
         }
 
