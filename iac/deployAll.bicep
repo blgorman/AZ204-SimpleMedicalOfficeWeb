@@ -46,6 +46,8 @@ param enableTemplateDeployment bool
 param enableSoftDelete bool
 @description('Deploy the Authentication secrets to Key Vault set to false after first deploy to avoid overwriting existing secrets')
 param deployAuthenticationSecrets bool
+@description('Deploy Key Vault role assignments set to false after first deploy if role assignments already exist')
+param deployKeyVaultRoleAssignments bool = true
 
 /*Log analytics Params */
 param la_name string 
@@ -164,6 +166,7 @@ module keyVault 'resources/keyVault.bicep' = {
     sqlAdminUsername: sqlServerAdminLogin
     sqlAdminPassword: sqlServerAdminPassword
     deployAuthenticationSecrets: deployAuthenticationSecrets
+    deployKeyVaultRoleAssignments: deployKeyVaultRoleAssignments
   }
 }
 

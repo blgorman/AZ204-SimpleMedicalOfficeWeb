@@ -26,6 +26,7 @@ param enableDiskEncryption = true
 param enableTemplateDeployment = true
 param enableSoftDelete = true
 param deployAuthenticationSecrets = false /* set to false after first deploy to avoid overwriting existing secrets */
+param deployKeyVaultRoleAssignments = false /* set to false after first deploy if role assignments already exist */
 
 /* log analytics params */
 param la_name = 'la-az204-simplemedicalofficeweb-ccad21'
