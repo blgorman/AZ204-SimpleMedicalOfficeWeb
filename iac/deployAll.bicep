@@ -154,7 +154,10 @@ module keyVault 'resources/keyVault.bicep' = {
     kv_name: kv_name
     location: location
     shouldUpdateConnectionString: shouldUpdateConnectionString
-    databaseConnectionString: sqlServer.outputs.connectionString
+    sqlServerFqdn: sqlServer.outputs.sqlServerFqdn
+    sqlDatabaseName: sqlServer.outputs.sqlDatabaseName
+    sqlAdminLogin: sql_admin_login
+    sqlAdminPassword: sql_admin_password
   }
 }
 

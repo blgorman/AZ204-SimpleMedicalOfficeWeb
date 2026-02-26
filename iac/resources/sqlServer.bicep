@@ -49,5 +49,3 @@ resource firewallRule 'Microsoft.Sql/servers/firewallRules@2023-08-01-preview' =
 output sqlServerName string = sqlServer.name
 output sqlServerFqdn string = sqlServer.properties.fullyQualifiedDomainName
 output sqlDatabaseName string = sqlDatabase.name
-@secure()
-output connectionString string = 'Server=tcp:${sqlServer.properties.fullyQualifiedDomainName},1433;Initial Catalog=${sql_database_name};Persist Security Info=False;User ID=${sql_admin_login};Password=${sql_admin_password};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;'

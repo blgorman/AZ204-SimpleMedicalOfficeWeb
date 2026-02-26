@@ -7,9 +7,15 @@ param enabledForTemplateDeployment bool = false
 param enabledForDiskEncryption bool = false
 @description('Flag to determine if the connection string secret should be updated')
 param shouldUpdateConnectionString bool = false
+@description('SQL Server FQDN for connection string')
+param sqlServerFqdn string = ''
+@description('SQL Database name for connection string')
+param sqlDatabaseName string = ''
+@description('SQL admin login for connection string')
+param sqlAdminLogin string = ''
 @secure()
-@description('SQL Server connection string value to store in Key Vault')
-param databaseConnectionString string = ''
+@description('SQL admin password for connection string')
+param sqlAdminPassword string = ''
 
 resource keyVault 'Microsoft.KeyVault/vaults@2025-05-01' = {
   name: kv_name
@@ -27,11 +33,11 @@ resource keyVault 'Microsoft.KeyVault/vaults@2025-05-01' = {
   }
 }
 
-resource databaseConnectionStringSecret 'Microsoft.KeyVault/vaults/secrets@2025-05-01' = if (shouldUpdateConnectionString && !empty(databaseConnectionString)) {
+resource databaseConnectionStringSecret 'Microsoft.KeyVault/vaults/secrets@2025-05-01' = if (shouldUpdateConnectionString && !empty(sqlServerFqdn)) {
   parent: keyVault
   name: 'DatabaseConnectionString'
   properties: {
-    value: databaseConnectionString
+    value: 'Server=tcp:${sqlServerFqdn},1433;Initial Catalog=${sqlDatabaseName};Persist Security Info=False;User ID=${sqlAdminLogin};Password=${sqlAdminPassword};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;'
   }
 }
 
