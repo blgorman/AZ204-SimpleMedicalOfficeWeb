@@ -24,3 +24,15 @@ param web_name = 'app-az204-simplemedicalofficeweb-ccad21'
 param staging_slot_name = 'staging'
 param deployConnectionStrings = true
 param deployRoleAssignments = false
+
+/* sql server params */
+param sql_server_name = 'sql-az204-smplmdcl-ccad21'
+param sql_admin_login = 'sqladmin'
+param sql_admin_password = 'YourSecurePassword123!' // Change this in production!
+param sql_database_name = 'SimpleMedicalOfficeDB'
+param sql_database_sku_name = 'Basic'
+param sql_database_sku_tier = 'Basic'
+
+/* key vault params */
+param kv_name = 'kv-az204-smplmdcl-ccad21'
+param shouldUpdateConnectionString = true

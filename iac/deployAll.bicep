@@ -24,6 +24,19 @@ param staging_slot_name string = 'staging'
 param deployConnectionStrings bool = false
 param deployRoleAssignments bool = false
 
+/*SQL Server Params */
+param sql_server_name string = 'sql-youforgotparams-ccad21'
+param sql_admin_login string = 'sqladmin'
+@secure()
+param sql_admin_password string
+param sql_database_name string = 'SimpleMedicalOfficeDB'
+param sql_database_sku_name string = 'Basic'
+param sql_database_sku_tier string = 'Basic'
+
+/*Key Vault Params */
+param kv_name string = 'kv-youforgotparams-ccad21'
+param shouldUpdateConnectionString bool = false
+
 var uniqueString = '20261231blg'
 
 var sa_name_normalized = toLower('${take(sa_name, 24 - length(uniqueString))}${uniqueString}') // truncate base only, uniqueString always preserved
@@ -117,3 +130,35 @@ module storageRoleAssignmentStagingSlot 'resources/storageRoleAssignment.bicep' 
     principalId: appService.outputs.stagingSlotPrincipalId
   }
 }
+
+/* create sql server and database */
+module sqlServer 'resources/sqlServer.bicep' = {
+  scope: group
+  name: 'deploySqlServer'
+  params: {
+    sql_server_name: sql_server_name
+    location: location
+    sql_admin_login: sql_admin_login
+    sql_admin_password: sql_admin_password
+    sql_database_name: sql_database_name
+    sql_database_sku_name: sql_database_sku_name
+    sql_database_sku_tier: sql_database_sku_tier
+  }
+}
+
+/* create key vault with database connection string secret */
+module keyVault 'resources/keyVault.bicep' = {
+  scope: group
+  name: 'deployKeyVault'
+  params: {
+    kv_name: kv_name
+    location: location
+    shouldUpdateConnectionString: shouldUpdateConnectionString
+    databaseConnectionString: sqlServer.outputs.connectionString
+  }
+}
+
+output keyVaultName string = keyVault.outputs.keyVaultName
+output keyVaultUri string = keyVault.outputs.keyVaultUri
+output sqlServerFqdn string = sqlServer.outputs.sqlServerFqdn
+output sqlDatabaseName string = sqlServer.outputs.sqlDatabaseName
