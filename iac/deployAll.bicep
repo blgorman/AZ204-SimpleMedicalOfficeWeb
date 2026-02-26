@@ -23,6 +23,11 @@ param clientIPAddress string
 /* App Config */
 param appConfigName string
 
+param storageAccountNameKey string
+param storageAccountEndpointKey string
+param storageAccountImagesContainerNameKey string
+param storageAccountDocumentsContainerNameKey string
+
 /* Vault */
 @minLength(10)
 @maxLength(13)
@@ -66,6 +71,29 @@ var uniqueString = '20261231blg'
 
 var sa_name_normalized = toLower('${take(sa_name, 24 - length(uniqueString))}${uniqueString}') // truncate base only, uniqueString always preserved
 
+var actualStorageAccountName = storageAccount.outputs.storageAccountName
+var actualStorageAccountEndpoint = storageAccount.outputs.storageAccountEndpoint
+
+var actualStorageAccountNameKVP = {
+  key: storageAccountNameKey
+  value: actualStorageAccountName
+}
+
+var actualStorageAccountEndpointKVP = {
+  key: storageAccountEndpointKey
+  value: actualStorageAccountEndpoint
+}
+
+var actualStorageAccountImagesContainerNameKVP = {
+  key: storageAccountImagesContainerNameKey
+  value: sa_images_container_name
+}
+
+var actualStorageAccountDocumentsContainerNameKVP = {
+  key: storageAccountDocumentsContainerNameKey
+  value: sa_documents_container_name
+}
+
 targetScope = 'subscription'
 
 /* create resource group */
@@ -107,6 +135,10 @@ module appConfig 'resources/appConfig.bicep' = {
     location: location
     uniqueIdentifier: uniqueString
     appConfigName: appConfigName
+    storageAccountNameKVP: actualStorageAccountNameKVP
+    storageAccountEndpointKVP: actualStorageAccountEndpointKVP
+    storageAccountImagesContainerNameKVP: actualStorageAccountImagesContainerNameKVP
+    storageAccountDocumentsContainerNameKVP: actualStorageAccountDocumentsContainerNameKVP
   }
 }
 
