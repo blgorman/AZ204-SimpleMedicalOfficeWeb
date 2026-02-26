@@ -4,9 +4,6 @@ param groupName string
 @description('Location for deployment of the resources')
 param location string 
 
-@description('Object Id for the Deployment Principal (User or Managed Identity) that will be assigned the User Access Administrator role on the resource group')
-param deploymentPrincipalObjectId string
-
 /* Database */
 @description('Name of the SQL Db Server')
 param serverName string  
@@ -74,16 +71,6 @@ targetScope = 'subscription'
 resource group 'Microsoft.Resources/resourceGroups@2025-04-01' = {
   name: groupName
   location: location
-}
-
-/* assign the user access administrator role to the deployment principal (umi) for this group */
-resource roleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
-  name: guid(group.id, deploymentPrincipalObjectId, 'User Access Administrator')
-  properties: {
-    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '18d7d88d-d35e-4fb5-a5c3-7773c20a72d9') // User Access Administrator
-    principalId: deploymentPrincipalObjectId
-    principalType: 'ServicePrincipal'
-  }
 }
 
 /* create storage account with images and documents containers */
