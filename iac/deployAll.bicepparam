@@ -3,6 +3,8 @@ using 'deployAll.bicep'
 param groupName = 'rg-az204-simplemedicalofficeweb-ccad21'
 param location = 'centralus'
 
+param deploymentPrincipalObjectId = 'a6e8af0e-220b-492a-ac65-124d1ca94d5d'
+
 /* Database */
 param serverName = 'simpleofficewebdbserver-ccad21'
 param sqlDatabaseName = 'dbSimpleOfficeWeb'
