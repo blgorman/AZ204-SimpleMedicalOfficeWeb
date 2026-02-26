@@ -14,11 +14,17 @@ param storageAccountEndpointKVP object
 param storageAccountImagesContainerNameKVP object
 param storageAccountDocumentsContainerNameKVP object
 
+param keyVaultFullName string
+param connectionStringSecretName string = 'DefaultConnectionString'
+
 resource configStore 'Microsoft.AppConfiguration/configurationStores@2025-06-01-preview' = {
   name: configStoreName
   location: location
   sku: {
     name: 'standard'
+  }
+  identity: {
+    type: 'SystemAssigned'
   }
 }
 
@@ -60,4 +66,15 @@ resource storageAccountEndpoint_KVP 'Microsoft.AppConfiguration/configurationSto
   }
 }
 
+// - ConnectionStrings__DefaultConnection (Key Vault Reference)
+resource connectionString_KVP 'Microsoft.AppConfiguration/configurationStores/keyValues@2025-06-01-preview' = {
+  parent: configStore
+  name: 'ConnectionStrings:DefaultConnection'
+  properties: {
+    value: '{"uri":"https://${keyVaultFullName}.vault.azure.net/secrets/${connectionStringSecretName}"}'
+    contentType: 'application/vnd.microsoft.appconfig.keyvaultref+json;charset=utf-8'
+  }
+}
+
 output appConfigName string = configStore.name
+output appConfigPrincipalId string = configStore.identity.principalId

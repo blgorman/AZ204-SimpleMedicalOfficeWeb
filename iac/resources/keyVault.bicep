@@ -1,12 +1,6 @@
 param location string = resourceGroup().location
-@description('Provide a unique datetime and initials string to make your instances unique. Use only lower case letters and numbers')
-@minLength(11)
-@maxLength(11)
-param uniqueIdentifier string
 
-@minLength(10)
-@maxLength(13)
-param keyVaultName string
+param keyVaultFullName string
 
 @description('Provide the object id of the admin user/group that will have access to the key vault')
 param keyVaultAdminObjectId string
@@ -22,6 +16,9 @@ param enableSoftDelete bool
 
 @description('Name of the App configuration')
 param appConfigName string
+
+@description('Principal ID of the App Configuration managed identity')
+param appConfigPrincipalId string
 
 @description('Name of the SQL Db Server')
 param sqlServerName string
@@ -39,10 +36,10 @@ param sqlAdminPassword string
 @description('Deploy the Authentication secrets to Key Vault set to false after first deploy to avoid overwriting existing secrets')
 param deployAuthenticationSecrets bool
 
-var vaultName = '${keyVaultName}-${uniqueIdentifier}'
 var skuName = 'standard'
 var softDeleteRetentionInDays = 7
-var roleId= '00482a5a-887f-4fb3-b363-3b7fe8e74483' // Key Vault Administrator role ID
+var keyVaultAdminRoleId = '00482a5a-887f-4fb3-b363-3b7fe8e74483' // Key Vault Administrator role ID
+var keyVaultSecretsUserRoleId = '4633458b-17de-408a-b874-0445c86b69e6' // Key Vault Secrets User role ID
 
 resource appConfig 'Microsoft.AppConfiguration/configurationStores@2025-06-01-preview' existing = {
   name: appConfigName
@@ -60,7 +57,7 @@ resource sqlDatabase 'Microsoft.Sql/servers/databases@2024-11-01-preview' existi
 var sqlConnectionString = 'Server=tcp:${sqlServer.properties.fullyQualifiedDomainName},1433;Initial Catalog=${sqlDatabase.name};Persist Security Info=False;User ID=${sqlAdminUsername};Password=${sqlAdminPassword};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;'
 
 resource keyVault 'Microsoft.KeyVault/vaults@2022-07-01' = {
-  name: vaultName
+  name: keyVaultFullName
   location: location
   properties: {
     enabledForDeployment: enableForDeployment
@@ -85,12 +82,23 @@ resource keyVault 'Microsoft.KeyVault/vaults@2022-07-01' = {
 // Assign Key Vault Administrator role to the specified admin object ID
 
 resource keyVaultAdminRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
-  name: guid(keyVault.id, keyVaultAdminObjectId, roleId)
+  name: guid(keyVault.id, keyVaultAdminObjectId, keyVaultAdminRoleId)
   scope: keyVault
   properties: {
-    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', roleId)
+    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', keyVaultAdminRoleId)
     principalId: keyVaultAdminObjectId
     principalType: 'Group'
+  }
+}
+
+// Assign Key Vault Secrets User role to App Configuration managed identity
+resource appConfigSecretsUserRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+  name: guid(keyVault.id, appConfigPrincipalId, keyVaultSecretsUserRoleId)
+  scope: keyVault
+  properties: {
+    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', keyVaultSecretsUserRoleId)
+    principalId: appConfigPrincipalId
+    principalType: 'ServicePrincipal'
   }
 }
 

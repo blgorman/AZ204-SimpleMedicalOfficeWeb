@@ -50,26 +50,6 @@ var commonAppSettings = [
     deploymentSlotSetting: true
   }
   {
-    name: 'StorageAccount__AccountName'
-    value: sa_name
-    deploymentSlotSetting: true
-  }
-  {
-    name: 'StorageAccount__ImagesContainerName'
-    value: sa_images_container_name
-    deploymentSlotSetting: true
-  }
-  {
-    name: 'StorageAccount__DocumentsContainerName'
-    value: sa_documents_container_name
-    deploymentSlotSetting: true
-  }
-  {
-    name: 'StorageAccount__Endpoint'
-    value: sa_endpoint
-    deploymentSlotSetting: true
-  }
-  {
     name: 'WEBSITE_AUTH_AAD_ALLOWED_TENANTS'
     value: allowedTenantsForAuthSecret
     deploymentSlotSetting: true
@@ -93,12 +73,6 @@ var stagingAppSettings = concat(commonAppSettings, [
 ])
 
 var commonConnectionStrings = [
-  {
-    name: 'DefaultConnection'
-    type: 'SQLAzure'
-    connectionString: defaultConnectionString
-    deploymentSlotSetting: true
-  }
   {
     name: 'AzureAppConfigConnection'
     type: 'Custom'
@@ -183,6 +157,8 @@ resource stagingSlotKvRoleAssignment 'Microsoft.Authorization/roleAssignments@20
     principalType: 'ServicePrincipal'
   }
 }
+
+//make sure that the app is a App Config Data Contributor 
 
 output webAppPrincipalId string = webApp.identity.principalId
 output stagingSlotPrincipalId string = stagingSlot.identity.principalId

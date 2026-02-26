@@ -12,11 +12,10 @@ param clientIPAddress = '169.197.71.222'
 
 /* App Config*/
 param appConfigName = 'ac-az204-mow-ccad21'
-
-param storageAccountNameKey = 'StorageAccount__AccountName'
-param storageAccountEndpointKey = 'StorageAccount__Endpoint'
-param storageAccountImagesContainerNameKey = 'StorageAccount__ImagesContainerName'
-param storageAccountDocumentsContainerNameKey = 'StorageAccount__DocumentsContainerName'
+param storageAccountNameKey = 'StorageAccount:AccountName'
+param storageAccountEndpointKey = 'StorageAccount:Endpoint'
+param storageAccountImagesContainerNameKey = 'StorageAccount:ImagesContainerName'
+param storageAccountDocumentsContainerNameKey = 'StorageAccount:DocumentsContainerName'
 
 
 /* vault*/

@@ -70,6 +70,7 @@ param deployRoleAssignments bool = false
 var uniqueString = '20261231blg'
 
 var sa_name_normalized = toLower('${take(sa_name, 24 - length(uniqueString))}${uniqueString}') // truncate base only, uniqueString always preserved
+var keyVaultFullName = '${keyVaultName}-${uniqueString}'
 
 var actualStorageAccountName = storageAccount.outputs.storageAccountName
 var actualStorageAccountEndpoint = storageAccount.outputs.storageAccountEndpoint
@@ -139,6 +140,8 @@ module appConfig 'resources/appConfig.bicep' = {
     storageAccountEndpointKVP: actualStorageAccountEndpointKVP
     storageAccountImagesContainerNameKVP: actualStorageAccountImagesContainerNameKVP
     storageAccountDocumentsContainerNameKVP: actualStorageAccountDocumentsContainerNameKVP
+    keyVaultFullName: keyVaultFullName
+    connectionStringSecretName: 'DefaultConnectionString'
   }
 }
 
@@ -147,8 +150,7 @@ module keyVault 'resources/keyVault.bicep' = {
   name: 'keyVault'
   scope: group
   params: {
-    keyVaultName: keyVaultName
-    uniqueIdentifier: uniqueString
+    keyVaultFullName: keyVaultFullName
     location: location
     enableForDeployment: enableForDeployment
     enableDiskEncryption: enableDiskEncryption
@@ -156,6 +158,7 @@ module keyVault 'resources/keyVault.bicep' = {
     enableSoftDelete: enableSoftDelete
     keyVaultAdminObjectId: keyVaultAdminObjectId
     appConfigName: appConfig.outputs.appConfigName
+    appConfigPrincipalId: appConfig.outputs.appConfigPrincipalId
     sqlServerName: database.outputs.sqlServerName
     sqlDatabaseName: database.outputs.sqlDatabaseName
     sqlAdminUsername: sqlServerAdminLogin
