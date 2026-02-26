@@ -39,6 +39,7 @@ param sqlAdminPassword string
 var vaultName = '${keyVaultName}-${uniqueIdentifier}'
 var skuName = 'standard'
 var softDeleteRetentionInDays = 7
+var roleId = '00482a5a-887f-4fb3-b363-3b7fe8e74483'
 
 resource appConfig 'Microsoft.AppConfiguration/configurationStores@2025-06-01-preview' existing = {
   name: appConfigName
@@ -79,11 +80,12 @@ resource keyVault 'Microsoft.KeyVault/vaults@2022-07-01' = {
 }
 
 // Assign Key Vault Administrator role to the specified admin object ID
+
 resource keyVaultAdminRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
-  name: guid(keyVault.id, keyVaultAdminObjectId, '00482a5a-887f-4fb3-b363-3b7fe8e74483')
+  name: 'deployKeyVaultAdminRole'
   scope: keyVault
   properties: {
-    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '00482a5a-887f-4fb3-b0d5-0e8b0531e8f8')
+    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', roleId)
     principalId: keyVaultAdminObjectId
     principalType: 'Group'
   }
