@@ -20,7 +20,7 @@ param enableForDeployment = true
 param enableDiskEncryption = true
 param enableTemplateDeployment = true
 param enableSoftDelete = true
-param deployAuthenticationSecrets = true
+param deployAuthenticationSecrets = true /* set to false after first deploy to avoid overwriting existing secrets */
 
 /* log analytics params */
 param la_name = 'la-az204-simplemedicalofficeweb-ccad21'
@@ -43,3 +43,4 @@ param web_name = 'app-az204-simplemedicalofficeweb-ccad21'
 param staging_slot_name = 'staging'
 param deployConnectionStrings = true
 param deployRoleAssignments = false
+

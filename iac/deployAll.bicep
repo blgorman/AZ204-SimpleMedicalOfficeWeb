@@ -128,6 +128,7 @@ module keyVault 'resources/keyVault.bicep' = {
     sqlDatabaseName: database.outputs.sqlDatabaseName
     sqlAdminUsername: sqlServerAdminLogin
     sqlAdminPassword: sqlServerAdminPassword
+    deployAuthenticationSecrets: deployAuthenticationSecrets
   }
 }
 
