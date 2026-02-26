@@ -17,7 +17,7 @@ public class Program
 
         // add the ability to leverage azure app configuration for configuration values
         var appConfigConnectionString = builder.Configuration.GetConnectionString("AzureAppConfigConnection");
-        if (!string.IsNullOrEmpty(appConfigConnectionString))
+        if (!string.IsNullOrEmpty(appConfigConnectionString) && !appConfigConnectionString.StartsWith("@Microsoft.KeyVault"))
         {
             try
             {
