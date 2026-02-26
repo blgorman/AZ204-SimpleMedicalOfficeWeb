@@ -142,6 +142,18 @@ resource KeyVault_Secret_AuthenticationSecret 'Microsoft.KeyVault/vaults/secrets
   }
 }
 
+resource KeyVault_Secret_AuthenticationSecret_Staging 'Microsoft.KeyVault/vaults/secrets@2025-05-01' = if (deployAuthenticationSecrets) {
+  parent: keyVault
+  name: 'MICROSOFT-PROVIDER-AUTHENTICATION-SECRET-STAGING'
+  properties: {
+    contentType: 'string'
+    attributes: {
+      enabled: true
+    }
+    value: 'you-must-manually-update-this'
+  }
+}
+
 output keyVaultName string = keyVault.name  
 output DefaultConnectionStringName string = KeyVault_Secret_DbConnectionString.name
 output AppConfigConnectionStringName string = KeyVault_Secret_AppConfigConnection.name

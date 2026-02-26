@@ -25,6 +25,7 @@ resource existingVault 'Microsoft.KeyVault/vaults@2025-05-01' existing = {
 var defaultConnectionString = '@Microsoft.KeyVault(VaultName=${existingVault.name};SecretName=${defaultConnectionStringName})'
 var appConfigConnectionString = '@Microsoft.KeyVault(VaultName=${existingVault.name};SecretName=${appConfigConnectionStringName})'
 var authenticationSecret = '@Microsoft.KeyVault(VaultName=${existingVault.name};SecretName=MICROSOFT-PROVIDER-AUTHENTICATION-SECRET)'
+var authenticationSecretStaging = '@Microsoft.KeyVault(VaultName=${existingVault.name};SecretName=MICROSOFT-PROVIDER-AUTHENTICATION-SECRET-STAGING)'
 var allowedTenantsForAuthSecret = '@Microsoft.KeyVault(VaultName=${existingVault.name};SecretName=WEBSITE-AUTH-AAD-ALLOWED-TENANTS)'
 
 var commonAppSettings = [
@@ -69,16 +70,27 @@ var commonAppSettings = [
     deploymentSlotSetting: true
   }
   {
-    name: 'MICROSOFT_PROVIDER_AUTHENTICATION_SECRET'
-    value: authenticationSecret
-    deploymentSlotSetting: true
-  }
-  {
     name: 'WEBSITE_AUTH_AAD_ALLOWED_TENANTS'
     value: allowedTenantsForAuthSecret
     deploymentSlotSetting: true
   }
 ]
+
+var productionAppSettings = concat(commonAppSettings, [
+  {
+    name: 'MICROSOFT_PROVIDER_AUTHENTICATION_SECRET'
+    value: authenticationSecret
+    deploymentSlotSetting: true
+  }
+])
+
+var stagingAppSettings = concat(commonAppSettings, [
+  {
+    name: 'MICROSOFT_PROVIDER_AUTHENTICATION_SECRET'
+    value: authenticationSecretStaging
+    deploymentSlotSetting: true
+  }
+])
 
 var commonConnectionStrings = [
   {
@@ -105,13 +117,13 @@ resource webApp 'Microsoft.Web/sites@2025-03-01' = {
     serverFarmId: hostingPlanId
     siteConfig: deployConnectionStrings ? {
       linuxFxVersion: 'DOTNETCORE|10.0'
-      appSettings: commonAppSettings
+      appSettings: productionAppSettings
       connectionStrings: commonConnectionStrings
       ftpsState: 'FtpsOnly'
       minTlsVersion: '1.2'
     } : {
       linuxFxVersion: 'DOTNETCORE|10.0'
-      appSettings: commonAppSettings
+      appSettings: productionAppSettings
       ftpsState: 'FtpsOnly'
       minTlsVersion: '1.2'
     }
@@ -130,13 +142,13 @@ resource stagingSlot 'Microsoft.Web/sites/slots@2025-03-01' = {
     serverFarmId: hostingPlanId
     siteConfig: deployConnectionStrings ? {
       linuxFxVersion: 'DOTNETCORE|10.0'
-      appSettings: commonAppSettings
+      appSettings: stagingAppSettings
       connectionStrings: commonConnectionStrings
       ftpsState: 'FtpsOnly'
       minTlsVersion: '1.2'
     } : {
       linuxFxVersion: 'DOTNETCORE|10.0'
-      appSettings: commonAppSettings
+      appSettings: stagingAppSettings
       ftpsState: 'FtpsOnly'
       minTlsVersion: '1.2'
     }
