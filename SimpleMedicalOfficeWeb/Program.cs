@@ -19,15 +19,25 @@ public class Program
         var appConfigConnectionString = builder.Configuration.GetConnectionString("AzureAppConfigConnection");
         if (!string.IsNullOrEmpty(appConfigConnectionString))
         {
-            builder.Configuration.AddAzureAppConfiguration(options =>
+            try
             {
-                options.Connect(appConfigConnectionString)
-                    .Select(KeyFilter.Any, LabelFilter.Null)
-                    .ConfigureKeyVault(kv =>
-                    {
-                        kv.SetCredential(new DefaultAzureCredential());
-                    });
-            });
+                builder.Configuration.AddAzureAppConfiguration(options =>
+                {
+                    options.Connect(appConfigConnectionString)
+                        .Select(KeyFilter.Any, LabelFilter.Null)
+                        .ConfigureKeyVault(kv =>
+                        {
+                            kv.SetCredential(new DefaultAzureCredential());
+                        });
+                });
+            }
+            catch (Exception ex)
+            {
+                // Log but don't crash - fall back to appsettings.json
+                builder.Logging.AddConsole();
+                var logger = LoggerFactory.Create(config => config.AddConsole()).CreateLogger("Startup");
+                logger.LogError(ex, "Failed to connect to Azure App Configuration");
+            }
         }
 
         // Add services to the container.
