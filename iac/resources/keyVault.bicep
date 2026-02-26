@@ -115,4 +115,6 @@ resource KeyVault_Secret_DbConnectionString 'Microsoft.KeyVault/vaults/secrets@2
   }
 }
 
-
+output keyVaultName string = keyVault.name  
+output DefaultConnectionStringName string = KeyVault_Secret_DbConnectionString.name
+output AppConfigConnectionStringName string = KeyVault_Secret_AppConfigConnection.name

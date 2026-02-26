@@ -198,5 +198,8 @@ module appService 'resources/appService.bicep' = {
     sa_endpoint: storageAccount.outputs.storageAccountEndpoint
     staging_slot_name: staging_slot_name
     deployConnectionStrings: deployConnectionStrings
+    keyVaultName: keyVault.outputs.keyVaultName
+    defaultConnectionStringName: keyVault.outputs.DefaultConnectionStringName
+    appConfigConnectionStringName: keyVault.outputs.AppConfigConnectionStringName
   }
 }

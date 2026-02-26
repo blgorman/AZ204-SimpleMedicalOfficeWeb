@@ -9,9 +9,20 @@ param sa_documents_container_name string
 param staging_slot_name string
 param deployConnectionStrings bool
 
+param keyVaultName string
+param defaultConnectionStringName string
+param appConfigConnectionStringName string
+
 resource applicationInsights 'Microsoft.Insights/components@2020-02-02' existing = {
   name: applicationInsightsName
 }
+
+resource existingVault 'Microsoft.KeyVault/vaults@2025-05-01' existing = {
+  name: keyVaultName
+}
+
+var defaultConnectionString = '@Microsoft.KeyVault(VaultName=${existingVault.name};SecretName=${defaultConnectionStringName})'
+var appConfigConnectionString = '@Microsoft.KeyVault(VaultName=${existingVault.name};SecretName=${appConfigConnectionStringName})'
 
 var commonAppSettings = [
   {
@@ -60,13 +71,13 @@ var commonConnectionStrings = [
   {
     name: 'DefaultConnection'
     type: 'SQLAzure'
-    connectionString: 'your-db-connection-string-here'
+    connectionString: defaultConnectionString
     deploymentSlotSetting: true
   }
   {
     name: 'AzureAppConfigConnection'
     type: 'Custom'
-    connectionString: 'your-app-config-connection-string-here'
+    connectionString: appConfigConnectionString
     deploymentSlotSetting: true
   }
 ]
@@ -117,6 +128,34 @@ resource stagingSlot 'Microsoft.Web/sites/slots@2025-03-01' = {
       minTlsVersion: '1.2'
     }
     httpsOnly: true
+  }
+}
+
+
+//both slot identities need to be set as Key Vault Secrets Officer on the vault:
+
+// Key Vault Secrets Officer role definition ID
+var keyVaultSecretsOfficerRoleId = subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'b86a8fe4-44ce-4948-aee5-eccb2c155cd7')
+
+// Grant Key Vault Secrets Officer role to the web app
+resource webAppKvRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+  name: guid(existingVault.id, webApp.id, keyVaultSecretsOfficerRoleId)
+  scope: existingVault
+  properties: {
+    roleDefinitionId: keyVaultSecretsOfficerRoleId
+    principalId: webApp.identity.principalId
+    principalType: 'ServicePrincipal'
+  }
+}
+
+// Grant Key Vault Secrets Officer role to the staging slot
+resource stagingSlotKvRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+  name: guid(existingVault.id, stagingSlot.id, keyVaultSecretsOfficerRoleId)
+  scope: existingVault
+  properties: {
+    roleDefinitionId: keyVaultSecretsOfficerRoleId
+    principalId: stagingSlot.identity.principalId
+    principalType: 'ServicePrincipal'
   }
 }
 
