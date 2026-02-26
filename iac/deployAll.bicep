@@ -1,40 +1,42 @@
 @description('Name of the Resource Group')
-param groupName string = 'rg-youforgotparams-ccad21'
+param groupName string 
 
 @description('Location for deployment of the resources')
-param location string = 'centralus'
+param location string 
 
 /* Database */
 @description('Name of the SQL Db Server')
-param serverName string = 'you-forgot-server-name'
-
+param serverName string  
 @description('Name of the Sql Database')
-param sqlDatabaseName string = 'you-forgot-database-name'
+param sqlDatabaseName string 
 
-@description('Admin UserName for the SQL Server')
-param sqlServerAdminLogin string = 'you-forgot-admin-login'
+@description('Whether to use an existing SQL Server (true) or create new (false)')
+param useExistingSqlServer bool = false
+
+@description('Admin UserName for the SQL Server (required when creating new)')
+param sqlServerAdminLogin string 
 
 @description('Admin Password for the SQL Server')
 @secure()
 param sqlServerAdminPassword string
 
 @description('Client IP Address for allow remote server connections')
-param clientIPAddress string
+param clientIPAddress string 
 
 /*Log analytics Params */
-param la_name string = 'la-youforgotparams-ccad21'
+param la_name string 
 param la_retentionInDays int = 30
 
 /*Application Insights Params */
-param ai_name string = 'ai-youforgotparams-ccad21'
+param ai_name string
 
 /*App Service Plan Params */
-param asp_name string = 'asp-youforgotparams-ccad21'
+param asp_name string 
 param asp_skuName string = 'F1'
 
 /*App Service Params */
-param web_name string = 'web-youforgotparams-ccad21'
-param sa_name string = 'sayouforgotparms235223'
+param web_name string 
+param sa_name string 
 param sa_images_container_name string = 'images'
 param sa_documents_container_name string = 'documents'
 param staging_slot_name string = 'staging'
@@ -72,6 +74,7 @@ module database 'resources/sqlServer.bicep' = {
     location: location
     serverName: serverName
     sqlDatabaseName: sqlDatabaseName
+    useExistingSqlServer: useExistingSqlServer
     sqlServerAdminLogin: sqlServerAdminLogin
     sqlServerAdminPassword: sqlServerAdminPassword
     clientIPAddress: clientIPAddress
