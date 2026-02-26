@@ -10,10 +10,7 @@ param serverName string
 @description('Name of the Sql Database')
 param sqlDatabaseName string 
 
-@description('Whether to use an existing SQL Server (true) or create new (false)')
-param useExistingSqlServer bool = false
-
-@description('Admin UserName for the SQL Server (required when creating new)')
+@description('Admin UserName for the SQL Server')
 param sqlServerAdminLogin string 
 
 @description('Admin Password for the SQL Server')
@@ -74,7 +71,6 @@ module database 'resources/sqlServer.bicep' = {
     location: location
     serverName: serverName
     sqlDatabaseName: sqlDatabaseName
-    useExistingSqlServer: useExistingSqlServer
     sqlServerAdminLogin: sqlServerAdminLogin
     sqlServerAdminPassword: sqlServerAdminPassword
     clientIPAddress: clientIPAddress

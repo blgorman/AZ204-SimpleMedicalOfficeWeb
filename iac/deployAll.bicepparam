@@ -4,9 +4,8 @@ param groupName = 'rg-az204-simplemedicalofficeweb-ccad21'
 param location = 'centralus'
 
 /* Database */
-param serverName = 'simpleofficewebdbserver'
-param sqlDatabaseName = 'dbSimpleOfficeWebContainerized'
-param useExistingSqlServer = true
+param serverName = 'simpleofficewebdbserver-ccad21'
+param sqlDatabaseName = 'dbSimpleOfficeWeb'
 param sqlServerAdminLogin = 'simpleofficewebuser'
 param sqlServerAdminPassword = 'Password#12345!'
 param clientIPAddress = '169.197.71.222'

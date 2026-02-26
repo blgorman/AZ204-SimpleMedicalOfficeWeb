@@ -6,13 +6,10 @@ param serverName string
 @description('Name of the Sql Database')
 param sqlDatabaseName string
 
-@description('Whether to use an existing SQL Server (true) or create new (false)')
-param useExistingSqlServer bool
-
-@description('Admin UserName for the SQL Server (required when creating new)')
+@description('Admin UserName for the SQL Server')
 param sqlServerAdminLogin string
 
-@description('Admin Password for the SQL Server (required when creating new)')
+@description('Admin Password for the SQL Server')
 @secure()
 param sqlServerAdminPassword string
 
@@ -22,13 +19,8 @@ param clientIPAddress string
 var dbSKU = 'Basic'
 var dbCapacity = 5
 
-// Reference existing SQL Server
-resource existingSqlServer 'Microsoft.Sql/servers@2024-11-01-preview' existing = if (useExistingSqlServer) {
-  name: serverName
-}
-
-// Create new SQL Server
-resource newSqlServer 'Microsoft.Sql/servers@2024-11-01-preview' = if (!useExistingSqlServer) {
+// SQL Server
+resource sqlServer 'Microsoft.Sql/servers@2024-11-01-preview' = {
   name: serverName
   location: location
   properties: {
@@ -40,9 +32,9 @@ resource newSqlServer 'Microsoft.Sql/servers@2024-11-01-preview' = if (!useExist
   }
 }
 
-// Firewall rule - Azure Services (for new server)
-resource sqlServerFirewallRuleAzureServicesNew 'Microsoft.Sql/servers/firewallRules@2023-08-01-preview' = if (!useExistingSqlServer) {
-  parent: newSqlServer
+// Firewall rule - Azure Services
+resource sqlServerFirewallRuleAzureServices 'Microsoft.Sql/servers/firewallRules@2023-08-01-preview' = {
+  parent: sqlServer
   name: 'AllowAllWindowsAzureIps'
   properties: {
     startIpAddress: '0.0.0.0'
@@ -50,18 +42,8 @@ resource sqlServerFirewallRuleAzureServicesNew 'Microsoft.Sql/servers/firewallRu
   }
 }
 
-// Firewall rule - Azure Services (for existing server)
-resource sqlServerFirewallRuleAzureServicesExisting 'Microsoft.Sql/servers/firewallRules@2023-08-01-preview' = if (useExistingSqlServer) {
-  parent: existingSqlServer
-  name: 'AllowAllWindowsAzureIps'
-  properties: {
-    startIpAddress: '0.0.0.0'
-    endIpAddress: '0.0.0.0'
-  }
-}
-
-resource sqlServerFirewallRuleClientIPNew 'Microsoft.Sql/servers/firewallRules@2023-08-01-preview' = if (!useExistingSqlServer && clientIPAddress != '') {
-  parent: newSqlServer
+resource sqlServerFirewallRuleClientIP 'Microsoft.Sql/servers/firewallRules@2023-08-01-preview' = if (clientIPAddress != '') {
+  parent: sqlServer
   name: 'ClientIPAddress_Home'
   properties: {
     startIpAddress: clientIPAddress
@@ -69,18 +51,9 @@ resource sqlServerFirewallRuleClientIPNew 'Microsoft.Sql/servers/firewallRules@2
   }
 }
 
-resource sqlServerFirewallRuleClientIPExisting 'Microsoft.Sql/servers/firewallRules@2023-08-01-preview' = if (useExistingSqlServer && clientIPAddress != '') {
-  parent: existingSqlServer
-  name: 'ClientIPAddress_Home'
-  properties: {
-    startIpAddress: clientIPAddress
-    endIpAddress: clientIPAddress
-  }
-}
-
-// Database on new server
-resource sqlDBNew 'Microsoft.Sql/servers/databases@2024-11-01-preview' = if (!useExistingSqlServer) {
-  parent: newSqlServer
+// Database
+resource sqlDB 'Microsoft.Sql/servers/databases@2024-11-01-preview' = {
+  parent: sqlServer
   name: sqlDatabaseName
   location: location
   sku: {
@@ -92,19 +65,5 @@ resource sqlDBNew 'Microsoft.Sql/servers/databases@2024-11-01-preview' = if (!us
   }
 }
 
-// Database on existing server (idempotent)
-resource sqlDBExisting 'Microsoft.Sql/servers/databases@2024-11-01-preview' = if (useExistingSqlServer) {
-  parent: existingSqlServer
-  name: sqlDatabaseName
-  location: location
-  sku: {
-    name: dbSKU
-    capacity: dbCapacity
-  }
-  properties: {
-    requestedBackupStorageRedundancy: 'local'
-  }
-}
-
-output sqlServerName string = useExistingSqlServer ? existingSqlServer.name : newSqlServer.name
-output sqlDatabaseName string = useExistingSqlServer ? sqlDBExisting.name : sqlDBNew.name
+output sqlServerName string = sqlServer.name
+output sqlDatabaseName string = sqlDB.name
