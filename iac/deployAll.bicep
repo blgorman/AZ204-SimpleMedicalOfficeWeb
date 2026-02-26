@@ -20,6 +20,9 @@ param sqlServerAdminPassword string
 @description('Client IP Address for allow remote server connections')
 param clientIPAddress string 
 
+/* App Config */
+param appConfigName string
+
 /*Log analytics Params */
 param la_name string 
 param la_retentionInDays int = 30
@@ -77,10 +80,18 @@ module database 'resources/sqlServer.bicep' = {
   }
 }
 
-/* vault */
-
-
 /* app config */
+module appConfig 'resources/appConfig.bicep' = {
+  name: 'appConfig'
+  scope: group
+  params: {
+    location: location
+    uniqueIdentifier: uniqueString
+    appConfigName: appConfigName
+  }
+}
+
+/* vault */
 
 
 /* assign Storage Blob Data Contributor to the web app and staging slot identities */

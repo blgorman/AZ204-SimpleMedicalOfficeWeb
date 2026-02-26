@@ -10,6 +10,9 @@ param sqlServerAdminLogin = 'simpleofficewebuser'
 param sqlServerAdminPassword = 'Password#12345!'
 param clientIPAddress = '169.197.71.222'
 
+/* App Config*/
+param appConfigName = 'ac-az204-mow-ccad21'
+
 /* log analytics params */
 param la_name = 'la-az204-simplemedicalofficeweb-ccad21'
 param la_retentionInDays = 30
