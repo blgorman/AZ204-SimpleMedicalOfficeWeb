@@ -120,7 +120,7 @@ resource KeyVault_Secret_DbConnectionString 'Microsoft.KeyVault/vaults/secrets@2
 
 resource KeyVault_Secret_AuthorizedTenants 'Microsoft.KeyVault/vaults/secrets@2025-05-01' = {
   parent: keyVault
-  name: 'WEBSITE_AUTH_AAD_ALLOWED_TENANTS'
+  name: 'WEBSITE-AUTH-AAD-ALLOWED-TENANTS'
   properties: {
     contentType: 'string'
     attributes: {
@@ -132,7 +132,7 @@ resource KeyVault_Secret_AuthorizedTenants 'Microsoft.KeyVault/vaults/secrets@20
 
 resource KeyVault_Secret_AuthenticationSecret 'Microsoft.KeyVault/vaults/secrets@2025-05-01' = if (deployAuthenticationSecrets) {
   parent: keyVault
-  name: 'MICROSOFT_PROVIDER_AUTHENTICATION_SECRET'
+  name: 'MICROSOFT-PROVIDER-AUTHENTICATION-SECRET'
   properties: {
     contentType: 'string'
     attributes: {

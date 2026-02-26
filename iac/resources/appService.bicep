@@ -24,8 +24,8 @@ resource existingVault 'Microsoft.KeyVault/vaults@2025-05-01' existing = {
 
 var defaultConnectionString = '@Microsoft.KeyVault(VaultName=${existingVault.name};SecretName=${defaultConnectionStringName})'
 var appConfigConnectionString = '@Microsoft.KeyVault(VaultName=${existingVault.name};SecretName=${appConfigConnectionStringName})'
-var authenticationSecret = '@Microsoft.KeyVault(VaultName=${existingVault.name};SecretName=MICROSOFT_PROVIDER_AUTHENTICATION_SECRET)'
-var allowedTenantsForAuthSecret = '@Microsoft.KeyVault(VaultName=${existingVault.name};SecretName=WEBSITE_AUTH_AAD_ALLOWED_TENANTS)'
+var authenticationSecret = '@Microsoft.KeyVault(VaultName=${existingVault.name};SecretName=MICROSOFT-PROVIDER-AUTHENTICATION-SECRET)'
+var allowedTenantsForAuthSecret = '@Microsoft.KeyVault(VaultName=${existingVault.name};SecretName=WEBSITE-AUTH-AAD-ALLOWED-TENANTS)'
 
 var commonAppSettings = [
   {
