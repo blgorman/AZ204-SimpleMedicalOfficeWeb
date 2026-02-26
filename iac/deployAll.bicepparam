@@ -13,6 +13,14 @@ param clientIPAddress = '169.197.71.222'
 /* App Config*/
 param appConfigName = 'ac-az204-mow-ccad21'
 
+/* vault*/
+param keyVaultName = 'kv-az204-mow'
+param keyVaultAdminObjectId = 'de2836ad-c2a2-4096-a9f8-a122b47b9833'
+param enableForDeployment = true
+param enableDiskEncryption = true
+param enableTemplateDeployment = true
+param enableSoftDelete = true
+
 /* log analytics params */
 param la_name = 'la-az204-simplemedicalofficeweb-ccad21'
 param la_retentionInDays = 30

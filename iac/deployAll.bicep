@@ -23,6 +23,24 @@ param clientIPAddress string
 /* App Config */
 param appConfigName string
 
+/* Vault */
+@minLength(10)
+@maxLength(13)
+param keyVaultName string
+
+@description('Provide the object id of the admin user/group that will have access to the key vault')
+param keyVaultAdminObjectId string
+
+@description('Whether to enable the key vault for deployment scenarios (e.g. to allow ARM templates to retrieve secrets during deployment)')
+param enableForDeployment bool
+@description('Whether to enable the key vault for disk encryption scenarios (e.g. to allow Azure Disk Encryption to retrieve secrets)')
+param enableDiskEncryption bool
+@description('Whether to enable the key vault for template deployment scenarios (e.g. to allow ARM templates to retrieve secrets after deployment)')
+param enableTemplateDeployment bool
+@description('Whether to enable soft delete on the key vault (recommended to prevent accidental deletion)')
+param enableSoftDelete bool
+
+
 /*Log analytics Params */
 param la_name string 
 param la_retentionInDays int = 30
@@ -92,6 +110,25 @@ module appConfig 'resources/appConfig.bicep' = {
 }
 
 /* vault */
+module keyVault 'resources/keyVault.bicep' = {
+  name: 'keyVault'
+  scope: group
+  params: {
+    keyVaultName: keyVaultName
+    uniqueIdentifier: uniqueString
+    location: location
+    enableForDeployment: enableForDeployment
+    enableDiskEncryption: enableDiskEncryption
+    enableTemplateDeployment: enableTemplateDeployment
+    enableSoftDelete: enableSoftDelete
+    keyVaultAdminObjectId: keyVaultAdminObjectId
+    appConfigName: appConfig.outputs.appConfigName
+    sqlServerName: database.outputs.sqlServerName
+    sqlDatabaseName: database.outputs.sqlDatabaseName
+    sqlAdminUsername: sqlServerAdminLogin
+    sqlAdminPassword: sqlServerAdminPassword
+  }
+}
 
 
 /* assign Storage Blob Data Contributor to the web app and staging slot identities */
