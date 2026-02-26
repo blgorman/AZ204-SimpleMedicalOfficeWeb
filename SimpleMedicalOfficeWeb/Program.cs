@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration.AzureAppConfiguration;
 using Microsoft.Identity.Web;
 using Microsoft.Identity.Web.UI;
 using SimpleMedicalOfficeWeb.Data;
@@ -12,6 +13,19 @@ public class Program
     public static void Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
+
+        // add the ability to leverage azure app configuration for configuration values
+        builder.Configuration.AddAzureAppConfiguration(options =>
+        {
+            var appConfigConnectionString = builder.Configuration.GetConnectionString("AzureAppConfigConnection");
+            if (string.IsNullOrEmpty(appConfigConnectionString))
+            {
+                throw new InvalidOperationException("Connection string 'AzureAppConfigConnection' not found.");
+            }
+            options.Connect(appConfigConnectionString)
+                .Select(KeyFilter.Any, LabelFilter.Null)
+                .Select(KeyFilter.Any, builder.Environment.EnvironmentName);
+        });
 
         // Add services to the container.
         var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
