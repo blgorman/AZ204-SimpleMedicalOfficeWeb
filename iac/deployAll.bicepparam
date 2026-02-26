@@ -20,6 +20,7 @@ param enableForDeployment = true
 param enableDiskEncryption = true
 param enableTemplateDeployment = true
 param enableSoftDelete = true
+param deployAuthenticationSecrets = true
 
 /* log analytics params */
 param la_name = 'la-az204-simplemedicalofficeweb-ccad21'

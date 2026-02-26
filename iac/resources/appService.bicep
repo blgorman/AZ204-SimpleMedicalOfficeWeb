@@ -13,6 +13,7 @@ param keyVaultName string
 param defaultConnectionStringName string
 param appConfigConnectionStringName string
 
+
 resource applicationInsights 'Microsoft.Insights/components@2020-02-02' existing = {
   name: applicationInsightsName
 }
@@ -23,6 +24,8 @@ resource existingVault 'Microsoft.KeyVault/vaults@2025-05-01' existing = {
 
 var defaultConnectionString = '@Microsoft.KeyVault(VaultName=${existingVault.name};SecretName=${defaultConnectionStringName})'
 var appConfigConnectionString = '@Microsoft.KeyVault(VaultName=${existingVault.name};SecretName=${appConfigConnectionStringName})'
+var authenticationSecret = '@Microsoft.KeyVault(VaultName=${existingVault.name};SecretName=MICROSOFT_PROVIDER_AUTHENTICATION_SECRET)'
+var allowedTenantsForAuthSecret = '@Microsoft.KeyVault(VaultName=${existingVault.name};SecretName=WEBSITE_AUTH_AAD_ALLOWED_TENANTS)'
 
 var commonAppSettings = [
   {
@@ -63,6 +66,16 @@ var commonAppSettings = [
   {
     name: 'StorageAccount__Endpoint'
     value: sa_endpoint
+    deploymentSlotSetting: true
+  }
+  {
+    name: 'MICROSOFT_PROVIDER_AUTHENTICATION_SECRET'
+    value: authenticationSecret
+    deploymentSlotSetting: true
+  }
+  {
+    name: 'WEBSITE_AUTH_AAD_ALLOWED_TENANTS'
+    value: allowedTenantsForAuthSecret
     deploymentSlotSetting: true
   }
 ]

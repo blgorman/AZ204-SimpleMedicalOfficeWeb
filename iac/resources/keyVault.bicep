@@ -36,6 +36,9 @@ param sqlAdminUsername string
 @secure()
 param sqlAdminPassword string
 
+@description('Deploy the Authentication secrets to Key Vault set to false after first deploy to avoid overwriting existing secrets')
+param deployAuthenticationSecrets bool
+
 var vaultName = '${keyVaultName}-${uniqueIdentifier}'
 var skuName = 'standard'
 var softDeleteRetentionInDays = 7
@@ -112,6 +115,30 @@ resource KeyVault_Secret_DbConnectionString 'Microsoft.KeyVault/vaults/secrets@2
       enabled: true
     }
     value: sqlConnectionString
+  }
+}
+
+resource KeyVault_Secret_AuthorizedTenants 'Microsoft.KeyVault/vaults/secrets@2025-05-01' = {
+  parent: keyVault
+  name: 'WEBSITE_AUTH_AAD_ALLOWED_TENANTS'
+  properties: {
+    contentType: 'string'
+    attributes: {
+      enabled: true
+    }
+    value: tenant().tenantId
+  }
+}
+
+resource KeyVault_Secret_AuthenticationSecret 'Microsoft.KeyVault/vaults/secrets@2025-05-01' = if (deployAuthenticationSecrets) {
+  parent: keyVault
+  name: 'MICROSOFT_PROVIDER_AUTHENTICATION_SECRET'
+  properties: {
+    contentType: 'string'
+    attributes: {
+      enabled: true
+    }
+    value: 'you-must-manually-update-this'
   }
 }
 

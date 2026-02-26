@@ -39,7 +39,8 @@ param enableDiskEncryption bool
 param enableTemplateDeployment bool
 @description('Whether to enable soft delete on the key vault (recommended to prevent accidental deletion)')
 param enableSoftDelete bool
-
+@description('Deploy the Authentication secrets to Key Vault set to false after first deploy to avoid overwriting existing secrets')
+param deployAuthenticationSecrets bool
 
 /*Log analytics Params */
 param la_name string 
