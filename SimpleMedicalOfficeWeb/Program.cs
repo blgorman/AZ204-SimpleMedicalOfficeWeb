@@ -15,17 +15,15 @@ public class Program
         var builder = WebApplication.CreateBuilder(args);
 
         // add the ability to leverage azure app configuration for configuration values
-        builder.Configuration.AddAzureAppConfiguration(options =>
+        var appConfigConnectionString = builder.Configuration.GetConnectionString("AzureAppConfigConnection");
+        if (!string.IsNullOrEmpty(appConfigConnectionString))
         {
-            var appConfigConnectionString = builder.Configuration.GetConnectionString("AzureAppConfigConnection");
-            if (string.IsNullOrEmpty(appConfigConnectionString))
+            builder.Configuration.AddAzureAppConfiguration(options =>
             {
-                throw new InvalidOperationException("Connection string 'AzureAppConfigConnection' not found.");
-            }
-            options.Connect(appConfigConnectionString)
-                .Select(KeyFilter.Any, LabelFilter.Null)
-                .Select(KeyFilter.Any, builder.Environment.EnvironmentName);
-        });
+                options.Connect(appConfigConnectionString)
+                    .Select(KeyFilter.Any, LabelFilter.Null);
+            });
+        }
 
         // Add services to the container.
         var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
