@@ -4,6 +4,23 @@ param groupName string = 'rg-youforgotparams-ccad21'
 @description('Location for deployment of the resources')
 param location string = 'centralus'
 
+/* Database */
+@description('Name of the SQL Db Server')
+param serverName string = 'you-forgot-server-name'
+
+@description('Name of the Sql Database')
+param sqlDatabaseName string = 'you-forgot-database-name'
+
+@description('Admin UserName for the SQL Server')
+param sqlServerAdminLogin string = 'you-forgot-admin-login'
+
+@description('Admin Password for the SQL Server')
+@secure()
+param sqlServerAdminPassword string
+
+@description('Client IP Address for allow remote server connections')
+param clientIPAddress string
+
 /*Log analytics Params */
 param la_name string = 'la-youforgotparams-ccad21'
 param la_retentionInDays int = 30
@@ -36,6 +53,56 @@ resource group 'Microsoft.Resources/resourceGroups@2025-04-01' = {
   location: location
 }
 
+/* create storage account with images and documents containers */
+module storageAccount 'resources/storageAccount.bicep' = {
+  scope: group
+  name: 'deployStorageAccount'
+  params: {
+    sa_name: sa_name_normalized
+    location: location
+    containerNames: [sa_images_container_name, sa_documents_container_name]
+  }
+}
+
+/* database*/
+module database 'resources/sqlServer.bicep' = {
+  name: 'database'
+  scope: group
+  params: {
+    location: location
+    serverName: serverName
+    sqlDatabaseName: sqlDatabaseName
+    sqlServerAdminLogin: sqlServerAdminLogin
+    sqlServerAdminPassword: sqlServerAdminPassword
+    clientIPAddress: clientIPAddress
+  }
+}
+
+/* vault */
+
+
+/* app config */
+
+
+/* assign Storage Blob Data Contributor to the web app and staging slot identities */
+module storageRoleAssignmentWebApp 'resources/storageRoleAssignment.bicep' = if (deployRoleAssignments) {
+  scope: group
+  name: 'deployStorageRoleAssignment-webApp'
+  params: {
+    storageAccountName: storageAccount.outputs.storageAccountName
+    principalId: appService.outputs.webAppPrincipalId
+  }
+}
+
+module storageRoleAssignmentStagingSlot 'resources/storageRoleAssignment.bicep' = if (deployRoleAssignments) {
+  scope: group
+  name: 'deployStorageRoleAssignment-stagingSlot'
+  params: {
+    storageAccountName: storageAccount.outputs.storageAccountName
+    principalId: appService.outputs.stagingSlotPrincipalId
+  }
+}
+
 /* create log analytics workspace */
 module logAnalytics 'resources/logAnalytics.bicep' = {
   scope: group
@@ -57,18 +124,6 @@ module appInsights 'resources/appInsights.bicep' = {
     logAnalyticsWorkspaceId: logAnalytics.outputs.logAnalyticsWorkspaceId
   }
 }
-
-/* create storage account with images and documents containers */
-module storageAccount 'resources/storageAccount.bicep' = {
-  scope: group
-  name: 'deployStorageAccount'
-  params: {
-    sa_name: sa_name_normalized
-    location: location
-    containerNames: [sa_images_container_name, sa_documents_container_name]
-  }
-}
-
 
 /* create app service plan */
 module appServicePlan 'resources/appServicePlan.bicep' = {
@@ -96,24 +151,5 @@ module appService 'resources/appService.bicep' = {
     sa_endpoint: storageAccount.outputs.storageAccountEndpoint
     staging_slot_name: staging_slot_name
     deployConnectionStrings: deployConnectionStrings
-  }
-}
-
-/* assign Storage Blob Data Contributor to the web app and staging slot identities */
-module storageRoleAssignmentWebApp 'resources/storageRoleAssignment.bicep' = if (deployRoleAssignments) {
-  scope: group
-  name: 'deployStorageRoleAssignment-webApp'
-  params: {
-    storageAccountName: storageAccount.outputs.storageAccountName
-    principalId: appService.outputs.webAppPrincipalId
-  }
-}
-
-module storageRoleAssignmentStagingSlot 'resources/storageRoleAssignment.bicep' = if (deployRoleAssignments) {
-  scope: group
-  name: 'deployStorageRoleAssignment-stagingSlot'
-  params: {
-    storageAccountName: storageAccount.outputs.storageAccountName
-    principalId: appService.outputs.stagingSlotPrincipalId
   }
 }

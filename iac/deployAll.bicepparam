@@ -3,6 +3,13 @@ using 'deployAll.bicep'
 param groupName = 'rg-az204-simplemedicalofficeweb-ccad21'
 param location = 'centralus'
 
+/* Database */
+param serverName = 'simpleofficewebdbserver'
+param sqlDatabaseName = 'dbSimpleOfficeWebContainerized'
+param sqlServerAdminLogin = 'simpleofficewebuser'
+param sqlServerAdminPassword = 'Password#12345!'
+param clientIPAddress = '169.197.71.222'
+
 /* log analytics params */
 param la_name = 'la-az204-simplemedicalofficeweb-ccad21'
 param la_retentionInDays = 30
@@ -22,5 +29,5 @@ param asp_skuName = 'P0v3'
 /* app service params */
 param web_name = 'app-az204-simplemedicalofficeweb-ccad21'
 param staging_slot_name = 'staging'
-param deployConnectionStrings = true
+param deployConnectionStrings = false
 param deployRoleAssignments = false
