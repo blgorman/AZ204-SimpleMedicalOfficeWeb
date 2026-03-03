@@ -5,11 +5,13 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UserSecretsId>aspnet-SimpleMedicalOfficeWeb-cc143bc0-0a1b-4bb1-9e06-5a7071438ff8</UserSecretsId>
+    <ApplicationInsightsResourceId>/subscriptions/fc82623b-78a7-48f9-bd97-de4bce56c99c/resourceGroups/rg-az204-simplemedicalofficeweb-ccad21/providers/microsoft.insights/components/ai-az204-simplemedicalofficeweb-ccad21</ApplicationInsightsResourceId>
   </PropertyGroup>
 
   <ItemGroup>
 	<PackageReference Include="Azure.Identity" Version="1.18.0" />
 	<PackageReference Include="Azure.Storage.Blobs" Version="12.27.0" />
+	<PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.23.0" />
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="10.0.3" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="10.0.3" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="10.0.3" />
